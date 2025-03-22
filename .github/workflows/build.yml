@@ -1,36 +1,24 @@
 name: Build lv_binding_js
-
-# Trigger the workflow on push or manually
 on:
   push:
-    branches: [ master ]
-  workflow_dispatch:  # Allows manual triggering
-
+    branches: [ master ]  # Change to [ main ] if your default branch is main
+  workflow_dispatch:
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      # Check out the repository code
       - name: Checkout repository
         uses: actions/checkout@v4
-
-      # Set up Node.js environment
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '20'  # Use a recent Node.js version
-
-      # Install esbuild
+          node-version: '20'  # Updated to latest LTS
       - name: Install dependencies
-        run: npx esbuild --version || npm install esbuild --global
-
-      # Build the JS bundle
+        run: npm install esbuild --save-dev  # Works without package.json in modern Node
       - name: Build JS bundle
         run: |
+          mkdir -p dist
           npx esbuild src/render/react/index.js --bundle --minify --outfile=dist/lvgljs-bundle.js --platform=browser
-          mkdir -p dist  # Ensure the dist directory exists
-
-      # Upload the built file as an artifact
       - name: Upload artifact
         uses: actions/upload-artifact@v3
         with:
